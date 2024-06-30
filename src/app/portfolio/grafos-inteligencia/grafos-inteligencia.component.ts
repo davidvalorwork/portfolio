@@ -2,8 +2,7 @@ import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-grafos-inteligencia',
-  standalone: true,
-  imports: [],
+  standalone: false,
   templateUrl: './grafos-inteligencia.component.html',
   styleUrl: './grafos-inteligencia.component.css'
 })
