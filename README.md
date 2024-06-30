@@ -25,3 +25,9 @@ Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To u
 ## Further help
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+
+## Tasks
+
+- Create portfolio module with components more little components the better.
+- The idea it's to have all my skills in this portfolio to find clients, and they must be easy to replicate in another project.
+- Also it's a good idea to work only with the angular docs and tailwindcss docs to use best practices.
