@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import NeoVis from 'neovis.js';
+import NeoVis, { Neo4jConfig, NeovisConfig, Node } from 'neovis.js';
 
 @Component({
   selector: 'app-grafos-inteligencia',
