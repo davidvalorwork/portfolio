@@ -5,5 +5,5 @@
   h-screen pt-5
 ">
   <facebook-search (output)="onFacebookSearch($event)"></facebook-search>
-  <app-grafos-inteligencia></app-grafos-inteligencia>
+  <app-grafos-inteligencia (output)="getFriends($event)" [visData]="visData"></app-grafos-inteligencia>
 </div>

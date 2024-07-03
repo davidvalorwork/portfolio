@@ -9,7 +9,7 @@ import { MatSnackBar } from '@angular/material/snack-bar'
 })
 export class SearchComponent {
   @Output() output = new EventEmitter()
-  searchQuery: string = 'David.EV.DesarrolloWeb'
+  searchQuery: string = 'isrador.silva'
   loading: boolean = false
 
   constructor(

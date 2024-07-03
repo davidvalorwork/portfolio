@@ -1,0 +1,10 @@
+<div class="p-5 text-center">
+
+  <h2>Person Details</h2>
+  <ul>
+    <li *ngFor="let key of personKeys">{{ key }}: {{ person[key] }}</li>
+  </ul>
+  <button mat-raised-button color="secondary" (click)="getFriends()">Get Friends</button>
+  <button mat-raised-button color="warning" (click)="goToProfile()">Go to Profile</button>
+  <button mat-raised-button color="primary" (click)="close()">Back</button>
+</div>

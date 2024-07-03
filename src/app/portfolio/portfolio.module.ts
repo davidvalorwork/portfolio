@@ -17,6 +17,9 @@ import { HttpClientModule, provideHttpClient, withFetch } from '@angular/common/
 import {MatInputModule} from '@angular/material/input';
 import {MatButtonModule} from '@angular/material/button';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
+import { HandleNodesService } from '../services/neovis/handle-nodes.service';
+import { DetalleComponent } from './detalle/detalle.component';
+import { MatDialogModule } from '@angular/material/dialog';
 
 @NgModule({
   declarations: [
@@ -25,7 +28,8 @@ import {MatSnackBarModule} from '@angular/material/snack-bar';
     SidebarComponent,
     LayoutComponent,
     GrafosInteligenciaComponent,
-    SearchComponent
+    SearchComponent,
+    DetalleComponent
   ],
   imports: [
     FormsModule,
@@ -34,6 +38,7 @@ import {MatSnackBarModule} from '@angular/material/snack-bar';
     MatInputModule,
     MatButtonModule,
     MatSnackBarModule,
+    MatDialogModule,
     NgIconsModule.withIcons({ 
       heroHomeModernSolid, 
       heroTrophySolid, 
@@ -45,7 +50,8 @@ import {MatSnackBarModule} from '@angular/material/snack-bar';
   providers: [
     provideRouter(routes),
     provideHttpClient(withFetch()),
-    FacebookApiService
+    FacebookApiService,
+    HandleNodesService
   ]
 })
 export class PortfolioModule { }

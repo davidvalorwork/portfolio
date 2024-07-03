@@ -18,5 +18,5 @@ export interface IPerson{
   cover_photo_text: string;
   id: string;
   profile_picture: string;
-  Friends?: IMiniPerson[];
+  friends?: IMiniPerson[];
 }

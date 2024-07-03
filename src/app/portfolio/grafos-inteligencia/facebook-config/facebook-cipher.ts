@@ -1,1 +1,0 @@
-export const facebookCipher = `MATCH (n:Person)-[r:HAS_FRIEND]->(m:Person) RETURN *`

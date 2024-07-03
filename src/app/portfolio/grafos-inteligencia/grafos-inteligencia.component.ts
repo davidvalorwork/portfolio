@@ -1,11 +1,12 @@
-import { AfterViewInit, Component, ElementRef, Input, ViewChild } from '@angular/core';
-import { DataSet, Network } from 'vis-network/standalone/esm/vis-network';
+import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnChanges, Output, ViewChild } from '@angular/core';
+import { Network } from 'vis-network/standalone/esm/vis-network';
 import { VisConfigService } from '../../services/neovis/vis-config.service';
 import { facebookEdge } from './facebook-config/facebook-edge';
 import { facebookNodes } from './facebook-config/facebook-nodes';
-import { facebookCipher } from './facebook-config/facebook-cipher';
 import { IVisDataSet } from '../models/IVisDataSet';
 import { Neo4jService } from '../../services/neovis/neo4j.service';
+import { MatDialog } from '@angular/material/dialog';
+import { DetalleComponent } from '../detalle/detalle.component';
 
 @Component({
   selector: 'app-grafos-inteligencia',
@@ -13,14 +14,16 @@ import { Neo4jService } from '../../services/neovis/neo4j.service';
   templateUrl: './grafos-inteligencia.component.html',
   styleUrl: './grafos-inteligencia.component.css'
 })
-export class GrafosInteligenciaComponent implements AfterViewInit {
+export class GrafosInteligenciaComponent implements AfterViewInit, OnChanges {
   @ViewChild('vis', {static: false}) visContainer!: ElementRef;
   @Input() visData: any;
+  @Output() output = new EventEmitter();
   network = null as any;
 
   constructor(
     public neo4jService: Neo4jService,
-    public visConfig: VisConfigService
+    public visConfig: VisConfigService,
+    public dialog: MatDialog
   ) {
     this.visConfig.addEdgeConfig(facebookEdge)
     this.visConfig.addNodeConfig(facebookNodes)
@@ -32,5 +35,23 @@ export class GrafosInteligenciaComponent implements AfterViewInit {
       this.visData, 
       this.visConfig.getOptions()
     );
+    this.network.on('click', (params: any) => {
+      console.log(params.nodes)
+      const node = this.visData.nodes.find((n: any) => n.id === params.nodes[0])
+      const ref = this.dialog.open(DetalleComponent, {
+        data: node.attributes
+      })
+      ref.afterClosed().subscribe(result => {
+        console.log(result)
+        this.output.emit(result)
+      })
+    })
   }
+
+  ngOnChanges(): void {
+    if (this.network) {
+      this.network.setData(this.visData)
+    }
+  }
+
 }
