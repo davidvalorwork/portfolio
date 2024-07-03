@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import {Observable} from 'rxjs';
-import { IProfile } from 'src/app/portfolio/models/profile.model'
-import { IApiBaseActions, ParamsType } from "../interfaces/api-base-actions.interface";
+import { HttpClient } from '@angular/common/http';
+import {Observable, tap} from 'rxjs';
+// import { IProfile } from 'src/app/portfolio/models/profile.model'
+// import { IApiBaseActions, ParamsType } from "../../portfolio/models/api-base-actions.interface";
 
 @Injectable({
   providedIn: 'root'
@@ -9,10 +10,16 @@ import { IApiBaseActions, ParamsType } from "../interfaces/api-base-actions.inte
 export class FacebookApiService {
   url: string = "http://localhost:8080"
 
-  constructor() { }
+  constructor(
+    private httpClient: HttpClient
+  ) { }
 
-  searchProfile(profileLink: string): Observable<IProfile> {
-    this.httpClient.post(`${url}`, profileLink)
+  private HandleResponse(response: any): void {
+    console.log('Response from server:', response);
+  }
+
+  searchProfile(profileLink: string): Observable<any> {
+    return this.httpClient.post(`${this.url}`, profileLink)
       .pipe(tap((x) => this.HandleResponse(x)))
   }
 

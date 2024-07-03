@@ -1,13 +1,22 @@
-import { Component } from '@angular/cli'
-import { FacebookApiService } from 'src/app/services/facebook/facebook-api.service'
+import { Component } from '@angular/core'
+import { FacebookApiService } from '../..//services/facebook/facebook-api.service'
 
 @Component({
   standalone: false,
-  selector:    'search',
+  selector:    'facebook-search',
   templateUrl: './search.component.html',
 })
-export class SearchComponent implements OnInit {
-  constructor(){
+export class SearchComponent {
+  constructor(
+    public facebookApiService: FacebookApiService
+  ){
 
+  }
+
+  onSubmit(searchQuery: string): void {
+    this.facebookApiService.searchProfile(searchQuery)
+      .subscribe((response)=>{
+        console.log('onSubmit Response from server:', response)
+      })
   }
 }
