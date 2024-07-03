@@ -1,11 +1,13 @@
 import { Injectable } from '@angular/core';
 import * as neo4j from 'neo4j-driver'
+import { IPerson } from '../../portfolio/models/IPerson';
+import { IMiniPerson } from '../../portfolio/models/IMiniPerson';
 
 @Injectable({
   providedIn: 'root'
 })
 export class Neo4jService {
-  url: string = "http://localhost:7687"
+  url: string = "bolt://localhost:7687"
   session = null as any;
 
   constructor() {}
@@ -23,6 +25,11 @@ export class Neo4jService {
     }
   }
 
+  async getAll(){
+    const query = 'MATCH (p:Person) RETURN p'
+    return await this.runQuery(query)
+  }
+
   async getPersonByName(name: string): Promise<any> {
     const query = `MATCH (p:Person {name: "${name}"}) RETURN p`
     return await this.runQuery(query)
@@ -38,9 +45,19 @@ export class Neo4jService {
     return await this.runQuery(query)
   }
 
-  async createPerson(name: string, link: string): Promise<any> {
-    const query = `CREATE (p:Person {name: "${name}", link: "${link}"}) RETURN p`
+  async createPersonFriend(person: IPerson, friend: IMiniPerson): Promise<any> {
+    const query = `MATCH (p:Person {id: "${person.id}"}), (f:Person {id: "${friend.id}"}) MERGE (p)-[r:FRIEND]->(f) RETURN r`
     return await this.runQuery(query)
+  }
+
+  createPerson(person: IPerson | IMiniPerson): Promise<any> {
+    const properties = Object.entries(person).map(([key, value]) => {
+      if(key == 'friends') return 'friends: "true"';
+      return `${key}: "${value}"`;
+    }).join(', ');
+    console.log(properties)
+    const query = `MERGE (p:Person {id: "${person.id}"}) ON CREATE SET ${properties} RETURN p`;
+    return this.runQuery(query)
   }
   
 }
