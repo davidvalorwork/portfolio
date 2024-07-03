@@ -10,6 +10,13 @@ import { SidebarComponent } from './sidebar/sidebar.component';
 import { HeaderComponent } from './header/header.component';
 import { LayoutComponent } from './layout/layout.component';
 import { GrafosInteligenciaComponent } from './grafos-inteligencia/grafos-inteligencia.component';
+import { SearchComponent } from './search/search.component';
+import { FormsModule } from '@angular/forms';
+import { FacebookApiService } from '../services/facebook/facebook-api.service';
+import { HttpClientModule, provideHttpClient, withFetch } from '@angular/common/http';
+import {MatInputModule} from '@angular/material/input';
+import {MatButtonModule} from '@angular/material/button';
+import {MatSnackBarModule} from '@angular/material/snack-bar';
 
 @NgModule({
   declarations: [
@@ -17,10 +24,16 @@ import { GrafosInteligenciaComponent } from './grafos-inteligencia/grafos-inteli
     HeaderComponent,
     SidebarComponent,
     LayoutComponent,
-    GrafosInteligenciaComponent
+    GrafosInteligenciaComponent,
+    SearchComponent
   ],
   imports: [
+    FormsModule,
+    HttpClientModule,
     CommonModule,
+    MatInputModule,
+    MatButtonModule,
+    MatSnackBarModule,
     NgIconsModule.withIcons({ 
       heroHomeModernSolid, 
       heroTrophySolid, 
@@ -29,6 +42,10 @@ import { GrafosInteligenciaComponent } from './grafos-inteligencia/grafos-inteli
       matGrain
     }),
   ],
-  providers: [provideRouter(routes)]
+  providers: [
+    provideRouter(routes),
+    provideHttpClient(withFetch()),
+    FacebookApiService
+  ]
 })
 export class PortfolioModule { }

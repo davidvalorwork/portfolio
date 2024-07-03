@@ -1,11 +1,11 @@
-import { AfterViewInit, Component } from '@angular/core';
-import NeoVis, { Neo4jConfig, NeovisConfig, Node } from 'neovis.js';
-import { NeovisConfigService } from '../../services/neovis/neovis-config.service';
+import { AfterViewInit, Component, ElementRef, Input, ViewChild } from '@angular/core';
+import { DataSet, Network } from 'vis-network/standalone/esm/vis-network';
+import { VisConfigService } from '../../services/neovis/vis-config.service';
 import { facebookEdge } from './facebook-config/facebook-edge';
 import { facebookNodes } from './facebook-config/facebook-nodes';
-import { facebookLabels } from './facebook-config/facebook-labels';
-import { facebookRelationships } from './facebook-config/facebook-relationships';
 import { facebookCipher } from './facebook-config/facebook-cipher';
+import { IVisDataSet } from '../models/IVisDataSet';
+import { Neo4jService } from '../../services/neovis/neo4j.service';
 
 @Component({
   selector: 'app-grafos-inteligencia',
@@ -14,18 +14,23 @@ import { facebookCipher } from './facebook-config/facebook-cipher';
   styleUrl: './grafos-inteligencia.component.css'
 })
 export class GrafosInteligenciaComponent implements AfterViewInit {
+  @ViewChild('vis', {static: false}) visContainer!: ElementRef;
+  @Input() visData: any;
+  network = null as any;
+
   constructor(
-    public neovisConfig: NeovisConfigService
+    public neo4jService: Neo4jService,
+    public visConfig: VisConfigService
   ) {
-    this.neovisConfig.addEdgeConfig(facebookEdge)
-    this.neovisConfig.addNodeConfig(facebookNodes)
-    this.neovisConfig.addLabels(facebookLabels)
-    this.neovisConfig.addRelationships(facebookRelationships)
-    this.neovisConfig.setInitialCypher(facebookCipher)
+    this.visConfig.addEdgeConfig(facebookEdge)
+    this.visConfig.addNodeConfig(facebookNodes)
   }
 
   ngAfterViewInit(): void {
-    const viz = new NeoVis(this.neovisConfig.getConfig() as NeovisConfig);
-    viz.render();
+    this.network = new Network(
+      this.visContainer.nativeElement, 
+      this.visData, 
+      this.visConfig.getOptions()
+    );
   }
 }

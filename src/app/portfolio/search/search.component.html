@@ -1,4 +1,8 @@
 <div class="flex justify-center items-center">
-  <input [(ngModel)]="searchQuery" type="text" placeholder="Search profiles..." class="border-2 border-gray-300 bg-white h-10 px-5 pr-16 rounded-lg text-sm focus:outline-none">
-  <button (click)="onSubmit(searchQuery)" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Search</button>
+  <mat-form-field appearance="fill">
+    <mat-label>Search profile...</mat-label>
+    <input matInput [(ngModel)]="searchQuery" placeholder="Paste the link">
+  </mat-form-field>
+  <button mat-raised-button color="primary" [disabled]="loading"
+  w (click)="onSubmit(searchQuery)">Search</button>
 </div>

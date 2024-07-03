@@ -14,13 +14,8 @@ export class FacebookApiService {
     private httpClient: HttpClient
   ) { }
 
-  private HandleResponse(response: any): void {
-    console.log('Response from server:', response);
-  }
-
   searchProfile(profileLink: string): Observable<any> {
     return this.httpClient.post(`${this.url}`, profileLink)
-      .pipe(tap((x) => this.HandleResponse(x)))
   }
 
 }
