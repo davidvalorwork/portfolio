@@ -2,8 +2,6 @@ import { Injectable } from '@angular/core';
 import {
   Neo4jConfig,
   NeovisConfig,
-  Node,
-  Edge,
   LabelConfig,
   RelationshipConfig
 } from 'neovis.js';
