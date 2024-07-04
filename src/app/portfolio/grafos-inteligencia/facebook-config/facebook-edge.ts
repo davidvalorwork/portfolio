@@ -4,7 +4,7 @@ export const facebookEdge = {
       enabled: true
     }
   },
-  color: '#f8dd6a',
+  color: '#001d6d',
   scaling: {
     min: 0,
     max: 5

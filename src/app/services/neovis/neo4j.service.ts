@@ -47,8 +47,12 @@ export class Neo4jService {
     return await this.runQuery(query)
   }
 
-  async getFriends(id: string, limit = 100): Promise<any> {
-    const query = `MATCH (p:Person {id: "${id}"})-[r:FRIEND]->(f) RETURN p, r, f LIMIT ${limit}`
+  async getFriends(id: string, limit = 1000): Promise<any> {
+    const query = `
+      MATCH (p:Person {id: "${id}"})-[r:FRIEND]->(f)-[r2:FRIEND]->(f2)
+      RETURN p, r, f, r2, f2
+      LIMIT ${limit}
+    `
     return await this.runQuery(query)
   }
 
@@ -63,10 +67,8 @@ export class Neo4jService {
   createPerson(person: IPerson | IMiniPerson): Promise<any> {
     const properties = Object.entries(person).map(([key, value]) => {
       if (key == 'friends') return 'p.friends= "true"';
-      return `p.${key}= "${value
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "") 
-        .replace(/[^a-zA-Z0-9]/g, "")}"`;
+      if (!value) value = ''
+      return `p.${key}= "${value.toString().normalize("NFD").replace(/[\u0300-\u036f]/g, "")}"`;
     }).join(', ');
     return this.runQuery(`
       MERGE (p:Person {id: "${person.id}"})
@@ -79,9 +81,11 @@ export class Neo4jService {
   filterNodes(nodes: any[]): any[] {
     const seenIds = new Set();
     nodes = nodes.filter((n: any) => {
-      if (!seenIds.has(n.id)) {
-        seenIds.add(n.id);
-        return true;
+      if (n.attributes) {
+        if (!seenIds.has(n.attributes.id)) {
+          seenIds.add(n.attributes.id);
+          return true;
+        }
       }
       return false;
     });
@@ -100,18 +104,26 @@ export class Neo4jService {
     return relations
   }
 
-  handleNodesRelationsFromResponse(allNR: any){
+  handleNodesRelationsFromResponse(allNR: any) {
     const nodesHave: (IPerson | IMiniPerson)[] = allNR.records.map((r: any) => r._fields[0].properties)
     const nodesFriend: (IPerson | IMiniPerson)[] = allNR.records.map((r: any) => r._fields[2].properties)
+    const nodesFriendOfFriend = allNR.records.map((r: any) => r._fields[4].properties)
     const relations: VisEdge[] = allNR.records.map((r: any) => {
       return {
-        id: r._fields[1].properties.id,
+        id: `${r._fields[0].properties.id}-${r._fields[2].properties.id}`,
         from: r._fields[0].properties.id,
         to: r._fields[2].properties.id
       }
     })
-    let nodes = [...nodesHave, ...nodesFriend]
-    this.filterNodes(nodes)
+    const relations2: VisEdge[] = allNR.records.map((r: any) => {
+      return {
+        id: `${r._fields[2].properties.id}-${r._fields[4].properties.id}`,
+        from: r._fields[2].properties.id,
+        to: r._fields[4].properties.id
+      }
+    })
+    relations.push(...relations2)
+    let nodes = [...nodesHave, ...nodesFriend, ...nodesFriendOfFriend]
     return { nodes, relations }
   }
 

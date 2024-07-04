@@ -29,12 +29,17 @@ export class LayoutComponent {
 
   async getAll() {
     const allNR = await this.neo4jService.getFriends(this.id)
-    console.log(allNR)
+    this.addToVisData(allNR)
+  }
+
+  addToVisData(allNR: any) {
     let { nodes, relations } = this.neo4jService.handleNodesRelationsFromResponse(allNR)
+    console.log(nodes)
     let visNodes: VisNode[] = this.handleNodesService.handleFacebookNodes(nodes)
-    visNodes = [...visNodes, ...this.visData.nodes]
-    relations = [...relations, ...this.visData.edges]
-    nodes = this.neo4jService.filterNodes(nodes)
+    if (this.visData.edges.length !== 0) visNodes = [...visNodes, ...this.visData.nodes]
+    if (this.visData.nodes.length !== 0) relations = [...relations, ...this.visData.edges]
+    visNodes = this.neo4jService.filterNodes(visNodes)
+    console.log(visNodes)
     relations = this.neo4jService.filterRelations(relations)
     this.visData = { nodes: visNodes, edges: relations }
   }
@@ -42,6 +47,7 @@ export class LayoutComponent {
   async getFriends(id: string) {
     const allNR = await this.neo4jService.getFriends(id)
     if (allNR.records.length === 0) return this.apiSearch(id)
+    this.addToVisData(allNR)
   }
 
   async onFacebookSearch(person: IPerson) {
@@ -57,9 +63,7 @@ export class LayoutComponent {
         } catch (e) { console.log("RELATION", e) }
       }
     }
-    if (this.visData == null)
-      this.getAll()
-    else this.getFriends(person.id)
+    this.getAll()
   }
 
   async apiSearch(id: string) {

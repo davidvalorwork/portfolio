@@ -15,9 +15,9 @@ import { DetalleComponent } from '../detalle/detalle.component';
   styleUrl: './grafos-inteligencia.component.css'
 })
 export class GrafosInteligenciaComponent implements AfterViewInit, OnChanges {
-  @ViewChild('vis', {static: false}) visContainer!: ElementRef;
+  @ViewChild('vis', { static: false }) visContainer!: ElementRef;
   @Input() visData: any;
-  @Output() output = new EventEmitter();
+  @Output('output') output = new EventEmitter();
   network = null as any;
 
   constructor(
@@ -31,20 +31,21 @@ export class GrafosInteligenciaComponent implements AfterViewInit, OnChanges {
 
   ngAfterViewInit(): void {
     this.network = new Network(
-      this.visContainer.nativeElement, 
-      this.visData, 
+      this.visContainer.nativeElement,
+      this.visData,
       this.visConfig.getOptions()
     );
     this.network.on('click', (params: any) => {
-      console.log(params.nodes)
       const node = this.visData.nodes.find((n: any) => n.id === params.nodes[0])
+      if(node){
       const ref = this.dialog.open(DetalleComponent, {
         data: node.attributes
       })
       ref.afterClosed().subscribe(result => {
-        console.log(result)
-        this.output.emit(result)
-      })
+        console.log("RESULT",result)
+        if (result != undefined){
+          this.output.emit(result)}
+      })}
     })
   }
 

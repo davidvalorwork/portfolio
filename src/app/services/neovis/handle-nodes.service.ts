@@ -18,7 +18,7 @@ export class HandleNodesService {
         title: np.name,
         group: np.name,
         image: np.profile_picture,
-        shape: 'image',
+        shape: 'circularImage',
         attributes: np
       }
     })

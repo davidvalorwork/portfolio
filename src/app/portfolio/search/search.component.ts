@@ -34,7 +34,6 @@ export class SearchComponent {
               key = key.replace(/\W.*/, '');
               key = key.toLowerCase()
               newResponse[key] = value
-              console.log(key, value)
             })
             this.output.emit(newResponse)
           }
