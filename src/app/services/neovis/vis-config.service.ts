@@ -14,6 +14,10 @@ export class VisConfigService {
   options = {
     nodes: null as any,
     edges: null as any,
+    interaction: { hover: true },
+    manipulation: {
+      enabled: true,
+    },
     physics: {
       enabled: true, // Mantenemos la física activada para permitir algún nivel de auto-organización
       solver: 'forceAtlas2Based', // Usamos el solver 'forceAtlas2Based' que es más adecuado para grandes cantidades de nodos

@@ -47,7 +47,7 @@ export class Neo4jService {
     return await this.runQuery(query)
   }
 
-  async getFriends(id: string, limit = 10): Promise<any> {
+  async getFriends(id: string, limit = 10000): Promise<any> {
     const query = `
       MATCH (p:Person {id: "${id}"})-[r:FRIEND]->(f)-[r2:FRIEND]->(f2)
       RETURN p, r, f, r2, f2

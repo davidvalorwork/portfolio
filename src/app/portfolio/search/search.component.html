@@ -1,8 +1,9 @@
-<div class="flex justify-center items-center absolute">
+<div class="justify-center text-center items-center absolute">
   <mat-form-field appearance="fill" class="w-60">
     <mat-label>Search profile...</mat-label>
     <input matInput [(ngModel)]="searchQuery" placeholder="Paste the name after facebook.com/">
   </mat-form-field>
-  <button mat-raised-button color="primary" [disabled]="loading"
-  w (click)="onSubmit(searchQuery)">Search</button>
+  <button mat-raised-button color="primary" [disabled]="loading" w (click)="onSubmit(searchQuery)">
+    Search
+  </button>
 </div>
