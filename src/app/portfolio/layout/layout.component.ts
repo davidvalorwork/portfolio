@@ -24,7 +24,12 @@ export class LayoutComponent {
     public handleNodesService: HandleNodesService
   ) {
     this.neo4jService.connect()
-    this.getAll()
+    const oldNetwork = localStorage.getItem('network')
+    if (oldNetwork) {
+      this.visData = JSON.parse(oldNetwork)
+    } else {
+      this.getAll()
+    }
   }
 
   async getAll() {
@@ -42,6 +47,7 @@ export class LayoutComponent {
     console.log(visNodes)
     relations = this.neo4jService.filterRelations(relations)
     this.visData = { nodes: visNodes, edges: relations }
+    localStorage.setItem("network", JSON.stringify(this.visData))
   }
 
   async getFriends(id: string) {
