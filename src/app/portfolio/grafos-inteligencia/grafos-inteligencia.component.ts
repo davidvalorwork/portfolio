@@ -70,6 +70,8 @@ export class GrafosInteligenciaComponent implements AfterViewInit, OnChanges {
       edges.push(this.visData.edges.find((n: any) => n.id === key))
     })
     console.log("Saving network", nodes.length, edges.length)
+    nodes.filter((n: any) => n !== undefined && n !== null)
+    edges.filter((n: any) => n !== undefined && n !== null)
     sessionStorage.setItem('network', JSON.stringify({ nodes, edges }))
   }
 

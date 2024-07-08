@@ -1,4 +1,8 @@
-<button mat-icon-button class="fixed text-white" (click)="saveNetwork()">
-  <mat-icon>save</mat-icon>
-</button>
-<div id="vis" #vis class="w-full h-full"></div>
+<div class="relative w-full h-full">
+  <div id="vis" #vis class="w-full h-full"></div>
+</div>
+<div class="absolute text-white bottom-5 right-5">
+  <button mat-icon-button (click)="saveNetwork()">
+    <mat-icon>save</mat-icon>
+  </button>
+</div>
