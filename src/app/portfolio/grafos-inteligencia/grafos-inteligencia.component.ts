@@ -30,6 +30,9 @@ export class GrafosInteligenciaComponent implements AfterViewInit, OnChanges {
   }
 
   ngAfterViewInit(): void {
+    this.visData.nodes = this.visData.nodes.filter((n: any) => n !== undefined && n !== null)
+    this.visData.edges = this.visData.edges.filter((n: any) => n !== undefined && n !== null)
+    console.log("Init vis data", this.visData)
     this.network = new Network(
       this.visContainer.nativeElement,
       this.visData,
@@ -37,15 +40,17 @@ export class GrafosInteligenciaComponent implements AfterViewInit, OnChanges {
     );
     this.network.on('click', (params: any) => {
       const node = this.visData.nodes.find((n: any) => n.id === params.nodes[0])
-      if(node){
-      const ref = this.dialog.open(DetalleComponent, {
-        data: node.attributes
-      })
-      ref.afterClosed().subscribe(result => {
-        console.log("RESULT",result)
-        if (result != undefined){
-          this.output.emit(result)}
-      })}
+      if (node) {
+        const ref = this.dialog.open(DetalleComponent, {
+          data: node.attributes
+        })
+        ref.afterClosed().subscribe(result => {
+          console.log("RESULT", result)
+          if (result != undefined) {
+            this.output.emit(result)
+          }
+        })
+      }
     })
   }
 
@@ -53,6 +58,19 @@ export class GrafosInteligenciaComponent implements AfterViewInit, OnChanges {
     if (this.network) {
       this.network.setData(this.visData)
     }
+  }
+
+  saveNetwork(): void {
+    let nodes: any[] = []
+    let edges: any[] = []
+    Object.keys(this.network.body.nodes).forEach(key => {
+      nodes.push(this.visData.nodes.find((n: any) => n.id === key))
+    })
+    Object.keys(this.network.body.edges).forEach(key => {
+      edges.push(this.visData.edges.find((n: any) => n.id === key))
+    })
+    console.log("Saving network", nodes.length, edges.length)
+    sessionStorage.setItem('network', JSON.stringify({ nodes, edges }))
   }
 
 }

@@ -30,7 +30,7 @@ export class VisConfigService {
       }
     },
     layout: {
-      improvedLayout: true, // Activamos el layout mejorado para optimizar la distribución inicial de los nodos
+      improvedLayout: false, // Activamos el layout mejorado para optimizar la distribución inicial de los nodos
       hierarchical: {
         enabled: false, // Aseguramos que el layout jerárquico esté desactivado ya que no queremos atracción hacia el centro
       }

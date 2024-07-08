@@ -14,12 +14,13 @@ import { SearchComponent } from './search/search.component';
 import { FormsModule } from '@angular/forms';
 import { FacebookApiService } from '../services/facebook/facebook-api.service';
 import { HttpClientModule, provideHttpClient, withFetch } from '@angular/common/http';
-import {MatInputModule} from '@angular/material/input';
-import {MatButtonModule} from '@angular/material/button';
-import {MatSnackBarModule} from '@angular/material/snack-bar';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule, MatIconButton } from '@angular/material/button';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { HandleNodesService } from '../services/neovis/handle-nodes.service';
 import { DetalleComponent } from './detalle/detalle.component';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
 
 @NgModule({
   declarations: [
@@ -39,9 +40,10 @@ import { MatDialogModule } from '@angular/material/dialog';
     MatButtonModule,
     MatSnackBarModule,
     MatDialogModule,
-    NgIconsModule.withIcons({ 
-      heroHomeModernSolid, 
-      heroTrophySolid, 
+    MatIconModule,
+    NgIconsModule.withIcons({
+      heroHomeModernSolid,
+      heroTrophySolid,
       heroUserSolid,
       heroAcademicCapSolid,
       matGrain
