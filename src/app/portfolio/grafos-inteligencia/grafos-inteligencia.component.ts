@@ -29,29 +29,35 @@ export class GrafosInteligenciaComponent implements AfterViewInit, OnChanges {
     this.visConfig.addNodeConfig(facebookNodes)
   }
 
+  detailFunction(params: any): void {
+    console.log("DETAIL", params)
+    const node = this.visData.nodes.find((n: any) => n.id === params.nodes[0])
+    if (node) {
+      const ref = this.dialog.open(DetalleComponent, {
+        data: node.attributes
+      })
+      ref.afterClosed().subscribe(result => {
+        console.log("RESULT", result)
+        if (result != undefined) {
+          this.output.emit(result)
+        }
+      })
+    }
+  }
+
   ngAfterViewInit(): void {
     this.visData.nodes = this.visData.nodes.filter((n: any) => n !== undefined && n !== null)
     this.visData.edges = this.visData.edges.filter((n: any) => n !== undefined && n !== null)
     console.log("Init vis data", this.visData)
+    const options = this.visConfig.getOptions()
+    options.manipulation = {
+      editNode: this.detailFunction.bind(this)
+    }
     this.network = new Network(
       this.visContainer.nativeElement,
       this.visData,
-      this.visConfig.getOptions()
+      options
     );
-    this.network.on('click', (params: any) => {
-      const node = this.visData.nodes.find((n: any) => n.id === params.nodes[0])
-      if (node) {
-        const ref = this.dialog.open(DetalleComponent, {
-          data: node.attributes
-        })
-        ref.afterClosed().subscribe(result => {
-          console.log("RESULT", result)
-          if (result != undefined) {
-            this.output.emit(result)
-          }
-        })
-      }
-    })
   }
 
   ngOnChanges(): void {
