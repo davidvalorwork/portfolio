@@ -31,18 +31,10 @@ export class GrafosInteligenciaComponent implements AfterViewInit, OnChanges {
 
   detailFunction(params: any): void {
     console.log("DETAIL", params)
-    const node = this.visData.nodes.find((n: any) => n.id === params.nodes[0])
-    if (node) {
-      const ref = this.dialog.open(DetalleComponent, {
-        data: node.attributes
-      })
-      ref.afterClosed().subscribe(result => {
-        console.log("RESULT", result)
-        if (result != undefined) {
-          this.output.emit(result)
-        }
-      })
-    }
+    const id = 1
+    const element = document.createElement('a')
+    element.setAttribute('id', `editNode=${id}`)
+    element.setAttribute('style', 'display: none')
   }
 
   ngAfterViewInit(): void {
