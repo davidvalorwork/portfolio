@@ -75,4 +75,26 @@ export class GrafosInteligenciaComponent implements AfterViewInit, OnChanges {
     sessionStorage.setItem('network', JSON.stringify({ nodes, edges }))
   }
 
+  factor: number = 0.1
+
+  zoomIn(): void {
+    let scale = this.network.getScale() + this.factor
+    if (scale < 0) scale = 0
+    let moveTo = {
+      scale,
+      position: this.network.getViewPosition()
+    }
+    this.network.moveTo(moveTo)
+  }
+
+  zoomOut(): void {
+    let scale = this.network.getScale() - this.factor
+    if (scale < 0) scale = 0
+    let moveTo = {
+      scale,
+      position: this.network.getViewPosition()
+    }
+    this.network.moveTo(moveTo)
+  }
+
 }

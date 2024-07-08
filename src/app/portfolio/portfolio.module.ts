@@ -21,6 +21,7 @@ import { HandleNodesService } from '../services/neovis/handle-nodes.service';
 import { DetalleComponent } from './detalle/detalle.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @NgModule({
   declarations: [
@@ -41,6 +42,7 @@ import { MatIconModule } from '@angular/material/icon';
     MatSnackBarModule,
     MatDialogModule,
     MatIconModule,
+    MatTooltipModule,
     NgIconsModule.withIcons({
       heroHomeModernSolid,
       heroTrophySolid,

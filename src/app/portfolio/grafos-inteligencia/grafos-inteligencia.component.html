@@ -1,8 +1,14 @@
 <div class="relative w-full h-full">
   <div id="vis" #vis class="w-full h-full"></div>
 </div>
-<div class="absolute text-white bottom-5 right-5">
-  <button mat-icon-button (click)="saveNetwork()">
+<div class="absolute text-white bottom-5 right-20">
+  <button mat-icon-button (click)="saveNetwork()" matTooltip="Save">
     <mat-icon>save</mat-icon>
+  </button>
+  <button mat-icon-button (click)="zoomIn()" matTooltip="Zoom In">
+    <mat-icon>zoom_in</mat-icon>
+  </button>
+  <button mat-icon-button (click)="zoomOut()" matTooltip="Zoom Out">
+    <mat-icon>zoom_out</mat-icon>
   </button>
 </div>
