@@ -1,10 +1,8 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { IPerson } from '../models/IPerson';
 import { Neo4jService } from '../../services/neovis/neo4j.service';
 import { HandleNodesService } from '../../services/neovis/handle-nodes.service';
-import { VisEdge, VisNode } from 'vis-network/declarations/network/gephiParser';
-import { IMiniPerson } from '../models/IMiniPerson';
-import vis from 'vis-network/declarations/index-legacy-bundle';
+import { VisNode } from 'vis-network/declarations/network/gephiParser';
 import { IVisDataSet } from '../models/IVisDataSet';
 import { SearchComponent } from '../search/search.component';
 
@@ -14,7 +12,7 @@ import { SearchComponent } from '../search/search.component';
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.css'
 })
-export class LayoutComponent {
+export class LayoutComponent implements OnInit {
   @ViewChild(SearchComponent) searchComponent!: SearchComponent
   id: string = "1253330847"
   visData: IVisDataSet = { nodes: [], edges: [] }
@@ -24,9 +22,14 @@ export class LayoutComponent {
     public handleNodesService: HandleNodesService
   ) {
     this.neo4jService.connect()
+  }
+
+  ngOnInit() {
     const oldNetwork = sessionStorage.getItem('network')
+    console.log(oldNetwork)
     if (oldNetwork) {
       this.visData = JSON.parse(oldNetwork)
+      if (this.visData.nodes.length === 0) this.getAll()
     } else {
       this.getAll()
     }
@@ -38,6 +41,7 @@ export class LayoutComponent {
   }
 
   addToVisData(allNR: any) {
+    console.log("NEO4j RESPONSE", allNR)
     let { nodes, relations } = this.neo4jService.handleNodesRelationsFromResponse(allNR)
     console.log(nodes)
     let visNodes: VisNode[] = this.handleNodesService.handleFacebookNodes(nodes)
@@ -58,18 +62,20 @@ export class LayoutComponent {
 
   async onFacebookSearch(person: IPerson) {
     this.id = person.id
-    let newP = await this.neo4jService.createPerson(person)
-    if (person.friends) {
-      for (let friend of person.friends) {
-        try {
-          newP = await this.neo4jService.createPerson(friend)
-        } catch (e) { console.log("NODE", e) }
-        try {
-          newP = await this.neo4jService.createPersonFriend(person, friend)
-        } catch (e) { console.log("RELATION", e) }
+    try {
+      let newP = await this.neo4jService.createPerson(person)
+      if (person.friends) {
+        for (let friend of person.friends) {
+          try {
+            newP = await this.neo4jService.createPerson(friend)
+          } catch (e) { console.log("NODE", e) }
+          try {
+            newP = await this.neo4jService.createPersonFriend(person, friend)
+          } catch (e) { console.log("RELATION", e) }
+        }
       }
-    }
-    this.getAll()
+      this.getAll()
+    } catch (err) { console.log(err) }
   }
 
   async apiSearch(id: string) {

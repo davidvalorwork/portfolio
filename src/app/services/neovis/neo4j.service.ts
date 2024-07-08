@@ -47,12 +47,16 @@ export class Neo4jService {
     return await this.runQuery(query)
   }
 
-  async getFriends(id: string, limit = 10000): Promise<any> {
+  async getFriends(id: string, limit = 10): Promise<any> {
     const query = `
-      MATCH (p:Person {id: "${id}"})-[r:FRIEND]->(f)-[r2:FRIEND]->(f2)
-      RETURN p, r, f, r2, f2
+      MATCH (p:Person {id: "${id}"})-[r:FRIEND]->(f)
+      OPTIONAL MATCH (f)-[r2:FRIEND]->(f2)
+      WITH p, r, f, r2, COALESCE(f2, f) AS fallback
+      WHERE f2 IS NOT NULL OR fallback = f
+      RETURN p, r, f, r2, fallback
       LIMIT ${limit}
     `
+    console.log("GET FRIENDS", query)
     return await this.runQuery(query)
   }
 
@@ -68,14 +72,16 @@ export class Neo4jService {
     const properties = Object.entries(person).map(([key, value]) => {
       if (key == 'friends') return 'p.friends= "true"';
       if (!value) value = ''
-      return `p.${key}= "${value.toString().normalize("NFD").replace(/[\u0300-\u036f]/g, "")}"`;
+      return `p.${key}= "${value.toString().normalize("NFD").replaceAll("\"", "").replaceAll("\n", "").replace(/[\u0300-\u036f]/g, "")}"`;
     }).join(', ');
-    return this.runQuery(`
+    const query = `
       MERGE (p:Person {id: "${person.id}"})
         ON CREATE SET ${properties}
         ON MATCH SET ${properties}
       RETURN p
-    `)
+    `
+    console.log("CREATE PERSON QUERY", query)
+    return this.runQuery(query)
   }
 
   filterNodes(nodes: any[]): any[] {
