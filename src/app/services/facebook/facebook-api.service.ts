@@ -8,7 +8,7 @@ import {Observable, tap} from 'rxjs';
   providedIn: 'root'
 })
 export class FacebookApiService {
-  url: string = "http://localhost:8080"
+  url: string = "http://amigodemiamigo.ddns.net:8080"
 
   constructor(
     private httpClient: HttpClient

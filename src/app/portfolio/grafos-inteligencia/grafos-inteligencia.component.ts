@@ -50,6 +50,18 @@ export class GrafosInteligenciaComponent implements AfterViewInit, OnChanges {
       this.visData,
       options
     );
+
+    this.network.on("doubleClick", (params: any) => {
+      console.log(params.nodes)
+      const resp = this.dialog.open(DetalleComponent, {
+        data: (this.visData.nodes.find((n: any) => n.id === params.nodes[0])).attributes,
+        height: '50%',
+      })
+      resp.afterClosed().subscribe((result: any) => {
+      console.log('The dialog was closed', result)
+        this.output.emit(result)
+      })
+    })
   }
 
   ngOnChanges(): void {

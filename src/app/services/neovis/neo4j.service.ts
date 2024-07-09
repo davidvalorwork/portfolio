@@ -8,7 +8,7 @@ import { VisEdge } from 'vis-network/declarations/network/gephiParser';
   providedIn: 'root'
 })
 export class Neo4jService {
-  url: string = "bolt://localhost:7687"
+  url: string = "bolt://amigodemiamigo.ddns.net:7687"
   driver = null as any;
 
   constructor() { }
@@ -47,12 +47,12 @@ export class Neo4jService {
     return await this.runQuery(query)
   }
 
-  async getFriends(id: string, limit = 10): Promise<any> {
+  async getFriends(id: string, limit = 100): Promise<any> {
     const query = `
       MATCH (p:Person {id: "${id}"})-[r:FRIEND]->(f)
       OPTIONAL MATCH (f)-[r2:FRIEND]->(f2)
       WITH p, r, f, r2, COALESCE(f2, f) AS fallback
-      WHERE f2 IS NOT NULL OR fallback = f
+      WHERE (f2 IS NOT NULL OR fallback = f) AND f <> p AND (f2 IS NULL OR f2 <> p) AND f2 <> f
       RETURN p, r, f, r2, fallback
       LIMIT ${limit}
     `
