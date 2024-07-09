@@ -1,1 +1,1 @@
-ssh -i bin/clave-proyecto1.pem ubuntu@18.216.210.139
+ssh -i bin/clave-proyecto1.pem ubuntu@18.117.243.194

@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Output } from '@angular/core'
 import { FacebookApiService } from '../..//services/facebook/facebook-api.service'
 import { MatSnackBar } from '@angular/material/snack-bar'
+import { Neo4jService } from '../../services/neovis/neo4j.service'
 
 @Component({
   standalone: false,
@@ -11,10 +12,12 @@ export class SearchComponent {
   @Output() output = new EventEmitter()
   searchQuery: string = 'isrador.silva'
   loading: boolean = false
+  searchLimit: number = 10
 
   constructor(
     public facebookApiService: FacebookApiService,
-    public _snackbar: MatSnackBar
+    public _snackbar: MatSnackBar,
+    public neo4jService: Neo4jService
   ) {
 
   }
@@ -27,7 +30,6 @@ export class SearchComponent {
           if (response) {
             console.log('onSubmit Response from server:', response)
             this.openSnackBar('Profile found!', 'Close')
-            this.loading = false
             let newResponse: any = {}
             Object.entries(response).forEach(([key, value]) => {
               key = key.replaceAll(' ', '_')
@@ -50,5 +52,13 @@ export class SearchComponent {
     this._snackbar.open(message, action, {
       duration: 2000,
     });
+  }
+
+  onSearchLimitChange() {
+    if (this.searchLimit < 1) {
+      this.searchLimit = 1;
+    }
+    console.log('Search limit changed to:', this.searchLimit);
+    // Add any additional logic you need to handle the change in search limit
   }
 }

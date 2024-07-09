@@ -8,13 +8,14 @@ import { VisEdge } from 'vis-network/declarations/network/gephiParser';
   providedIn: 'root'
 })
 export class Neo4jService {
-  url: string = "bolt://amigodemiamigo.ddns.net:7687"
+  url: string = "neo4j+s://e2df0825.databases.neo4j.io:7687"
   driver = null as any;
+  limit = 10;
 
   constructor() { }
 
   connect(): void {
-    this.driver = neo4j.driver(this.url, neo4j.auth.basic("neo4j", "12341234aA@@"))
+    this.driver = neo4j.driver(this.url, neo4j.auth.basic("neo4j", "aa1NB5I7mshNItmfvr1wnSzh226LsVkJAK-MGlkdCp0"))
     this.createIndexIfNotExist()
   }
 
@@ -47,14 +48,11 @@ export class Neo4jService {
     return await this.runQuery(query)
   }
 
-  async getFriends(id: string, limit = 100): Promise<any> {
+  async getFriends(id: string): Promise<any> {
     const query = `
       MATCH (p:Person {id: "${id}"})-[r:FRIEND]->(f)
-      OPTIONAL MATCH (f)-[r2:FRIEND]->(f2)
-      WITH p, r, f, r2, COALESCE(f2, f) AS fallback
-      WHERE (f2 IS NOT NULL OR fallback = f) AND f <> p AND (f2 IS NULL OR f2 <> p) AND f2 <> f
-      RETURN p, r, f, r2, fallback
-      LIMIT ${limit}
+      RETURN p, r, f
+      LIMIT ${this.limit}
     `
     console.log("GET FRIENDS", query)
     return await this.runQuery(query)
@@ -105,32 +103,42 @@ export class Neo4jService {
         seenIds.add(r.id);
         return true;
       }
+      if (r.from == r.to) return false
       return false;
     });
     return relations
   }
 
   handleNodesRelationsFromResponse(allNR: any) {
-    const nodesHave: (IPerson | IMiniPerson)[] = allNR.records.map((r: any) => r._fields[0].properties)
-    const nodesFriend: (IPerson | IMiniPerson)[] = allNR.records.map((r: any) => r._fields[2].properties)
-    const nodesFriendOfFriend = allNR.records.map((r: any) => r._fields[4].properties)
-    const relations: VisEdge[] = allNR.records.map((r: any) => {
-      return {
-        id: `${r._fields[0].properties.id}-${r._fields[2].properties.id}`,
-        from: r._fields[0].properties.id,
-        to: r._fields[2].properties.id
+    const nodes = new Map<string, IPerson | IMiniPerson>();
+    const relations = new Set<VisEdge>();
+  
+    allNR.records.forEach((r: any) => {
+      const [haveNode, , friendNode, , friendOfFriendNode] = r._fields.map((field: any) => field?.properties);
+      nodes.set(haveNode.id, haveNode);
+      nodes.set(friendNode.id, friendNode);
+      if (friendOfFriendNode) {
+        nodes.set(friendOfFriendNode.id, friendOfFriendNode);
       }
-    })
-    const relations2: VisEdge[] = allNR.records.map((r: any) => {
-      return {
-        id: `${r._fields[2].properties.id}-${r._fields[4].properties.id}`,
-        from: r._fields[2].properties.id,
-        to: r._fields[4].properties.id
+  
+      const relation1 = {
+        id: `${haveNode.id}-${friendNode.id}`,
+        from: haveNode.id,
+        to: friendNode.id
+      };
+      relations.add(relation1);
+  
+      if (friendOfFriendNode) {
+        const relation2 = {
+          id: `${friendNode.id}-${friendOfFriendNode.id}`,
+          from: friendNode.id,
+          to: friendOfFriendNode.id
+        };
+        relations.add(relation2);
       }
-    })
-    relations.push(...relations2)
-    let nodes = [...nodesHave, ...nodesFriend, ...nodesFriendOfFriend]
-    return { nodes, relations }
+    });
+  
+    return { nodes: Array.from(nodes.values()), relations: Array.from(relations) };
   }
 
 }

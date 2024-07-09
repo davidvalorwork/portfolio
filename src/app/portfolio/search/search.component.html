@@ -1,9 +1,14 @@
-<div class="justify-center text-center items-center absolute">
+<div class="justify-center text-center items-center absolute z-50">
+  <mat-form-field appearance="fill">
+    <mat-label>Limit of Persons in Get Friends</mat-label>
+    <input matInput [(ngModel)]="searchLimit" type="number" placeholder="Enter limit" (change)="onSearchLimitChange()" min="1">
+  </mat-form-field>
   <mat-form-field appearance="fill" class="w-60">
     <mat-label>Search profile...</mat-label>
     <input matInput [(ngModel)]="searchQuery" placeholder="Paste the name after facebook.com/">
   </mat-form-field>
-  <button mat-raised-button color="primary" [disabled]="loading" w (click)="onSubmit(searchQuery)">
-    Search
+  <button mat-raised-button color="primary" [disabled]="loading" (click)="onSubmit(searchQuery)">
+    <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+    <span *ngIf="!loading">Search</span>
   </button>
 </div>

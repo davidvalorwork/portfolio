@@ -1,0 +1,2 @@
+sudo docker run -d -p 8080:8080 --cpus 0.8 --memory 600MB --name scanner davidvalorwork/scanner
+sudo docker run -d --cpus 0.5 --memory 500MB -p7474:7474 -p7687:7687 --name neo4j --env NEO4J_AUTH=neo4j/14141313aA@@ neo4j
