@@ -38,26 +38,26 @@ export class LayoutComponent implements OnInit {
   }
 
   async getAll() {
-    if(this.searchComponent) this.searchComponent.loading = true
+    if (this.searchComponent) this.searchComponent.loading = true
     const allNR = await this.neo4jService.getFriends(this.id)
     this.addToVisData(allNR)
-    if(this.searchComponent) this.searchComponent.loading = false
+    if (this.searchComponent) this.searchComponent.loading = false
   }
 
   addToVisData(allNR: any) {
-      // Assuming handleNodesRelationsFromResponse, handleFacebookNodes, filterNodes, and filterRelations
-      // are optimized and necessary, we focus on optimizing the current method's logic.
-      const { nodes, relations } = this.neo4jService.handleNodesRelationsFromResponse(allNR);
-      let visNodes: VisNode[] = this.neo4jService.filterNodes(
-          this.handleNodesService.handleFacebookNodes(nodes).concat(this.visData.nodes)
-      );
-      let filteredRelations = this.neo4jService.filterRelations(relations.concat(this.visData.edges));
-  
-      // Only update and store in session if there's a change
-      if (JSON.stringify(this.visData) !== JSON.stringify({ nodes: visNodes, edges: filteredRelations })) {
-          this.visData = { nodes: visNodes, edges: filteredRelations };
-          sessionStorage.setItem("network", JSON.stringify(this.visData));
-      }
+    // Assuming handleNodesRelationsFromResponse, handleFacebookNodes, filterNodes, and filterRelations
+    // are optimized and necessary, we focus on optimizing the current method's logic.
+    const { nodes, relations } = this.neo4jService.handleNodesRelationsFromResponse(allNR);
+    let visNodes: VisNode[] = this.neo4jService.filterNodes(
+      this.handleNodesService.handleFacebookNodes(nodes).concat(this.visData.nodes)
+    );
+    let filteredRelations = this.neo4jService.filterRelations(relations.concat(this.visData.edges));
+
+    // Only update and store in session if there's a change
+    if (JSON.stringify(this.visData) !== JSON.stringify({ nodes: visNodes, edges: filteredRelations })) {
+      this.visData = { nodes: visNodes, edges: filteredRelations };
+      sessionStorage.setItem("network", JSON.stringify(this.visData));
+    }
   }
 
   async getFriends(id: string) {
@@ -69,16 +69,16 @@ export class LayoutComponent implements OnInit {
   async onFacebookSearch(person: IPerson) {
     this.id = person.id
     try {
-      let newP = await this.neo4jService.createPerson(person)
+      await this.neo4jService.createPersonNormal(person)
       if (person.friends) {
-        for (let [index, friend] of person.friends.entries()) {
+        const batchSize = 30;
+        for (let i = 0; i < person.friends.length; i += batchSize) {
+          const batch = person.friends.slice(i, i + batchSize);
+          // Enviar cada lote a createPersonBulk
           try {
-            newP = await this.neo4jService.createPerson(friend)
-            this._snackbar.open(`Friend added ${friend.name} ${index+1}/${person.friends.length}!`, 'Close', { duration: 2000 })
-          } catch (e) { console.log("NODE", e) }
-          try {
-            newP = await this.neo4jService.createPersonFriend(person, friend)
-          } catch (e) { console.log("RELATION", e) }
+            await this.neo4jService.createBulkPersons(batch, person);
+            this._snackbar.open(`Batch from ${i + 1} to ${Math.min(i + batchSize, person.friends.length)}/${person.friends.length} added!`, 'Close', { duration: 2000 });
+          } catch (e) { console.log("BULK ERROR", e); }
         }
       }
       this.getAll()

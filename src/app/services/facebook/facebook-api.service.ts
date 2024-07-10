@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import {Observable, tap} from 'rxjs';
+import {Observable} from 'rxjs';
 // import { IProfile } from 'src/app/portfolio/models/profile.model'
 // import { IApiBaseActions, ParamsType } from "../../portfolio/models/api-base-actions.interface";
 
@@ -8,14 +8,15 @@ import {Observable, tap} from 'rxjs';
   providedIn: 'root'
 })
 export class FacebookApiService {
-  url: string = "http://18.117.243.194:8080"
+  url: string = "http://18.117.243.194:4000"
 
   constructor(
     private httpClient: HttpClient
   ) { }
 
   searchProfile(profileLink: string): Observable<any> {
-    return this.httpClient.post(`${this.url}`, profileLink)
+    console.log("Consulting this profile in ", this.url, profileLink)
+    return this.httpClient.post(`${this.url}/`, profileLink)
   }
 
 }

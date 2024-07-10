@@ -58,8 +58,9 @@ export class GrafosInteligenciaComponent implements AfterViewInit, OnChanges {
         height: '50%',
       })
       resp.afterClosed().subscribe((result: any) => {
-      console.log('The dialog was closed', result)
-        this.output.emit(result)
+        console.log('The dialog was closed', result)
+        if (result)
+          this.output.emit(result)
       })
     })
   }

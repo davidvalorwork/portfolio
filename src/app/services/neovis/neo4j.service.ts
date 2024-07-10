@@ -66,7 +66,49 @@ export class Neo4jService {
     `)
   }
 
-  createPerson(person: IPerson | IMiniPerson): Promise<any> {
+  createBulkPersons(persons: (IPerson | IMiniPerson)[], friend: IPerson): Promise<any> {
+    const queries = persons.map((person) => {
+      return this.createPerson(person, friend)
+    })
+    let query = queries.join(` \n `)
+    let lastIndex = persons.length - 1;
+    while (lastIndex >= 0 && (persons[lastIndex].id === undefined || !persons[lastIndex].id)) {
+      lastIndex--;
+    }
+    if (lastIndex >= 0) { // Ensure there's at least one valid ID
+      query += `RETURN p${persons[lastIndex].id}`;
+    } else {
+      // Handle the case where no valid ID is found
+      console.error("No valid person ID found");
+    }
+
+    // console.log("CREATE BULK PERSONS QUERY", query)
+    return this.runQuery(query)
+  }
+
+  createPerson(person: IPerson | IMiniPerson, friend: IPerson): string {
+    if (person.id) {
+      const properties = Object.entries(person).map(([key, value]) => {
+        if (key == 'friends') return `p${person.id}.friends= "true"`;
+        if (!value) value = ''
+        return `p${person.id}.${key}= "${value.toString().normalize("NFD").replaceAll("\"", "").replaceAll("\n", "").replace(/[\u0300-\u036f]/g, "")}"`;
+      }).join(', ');
+      // TODO Error query hay que mejorar
+      const query = `
+      MERGE (p${person.id}:Person {id: "${person.id}"})
+        ON CREATE SET ${properties}
+        ON MATCH SET ${properties}
+      WITH p${person.id}
+      MATCH (p${person.id}:Person {id${person.id}: "${friend.id}"}), (f${person.id}:Person {id${person.id}: "${person.id}"})
+      MERGE (p${person.id})-[r${person.id}:FRIEND]->(f${person.id}) 
+    `
+      console.log("CREATE PERSON QUERY", query)
+      return query
+    }
+    return ''
+  }
+
+  createPersonNormal(person: IPerson | IMiniPerson): Promise<any> {
     const properties = Object.entries(person).map(([key, value]) => {
       if (key == 'friends') return 'p.friends= "true"';
       if (!value) value = ''
@@ -112,7 +154,7 @@ export class Neo4jService {
   handleNodesRelationsFromResponse(allNR: any) {
     const nodes = new Map<string, IPerson | IMiniPerson>();
     const relations = new Set<VisEdge>();
-  
+
     allNR.records.forEach((r: any) => {
       const [haveNode, , friendNode, , friendOfFriendNode] = r._fields.map((field: any) => field?.properties);
       nodes.set(haveNode.id, haveNode);
@@ -120,14 +162,14 @@ export class Neo4jService {
       if (friendOfFriendNode) {
         nodes.set(friendOfFriendNode.id, friendOfFriendNode);
       }
-  
+
       const relation1 = {
         id: `${haveNode.id}-${friendNode.id}`,
         from: haveNode.id,
         to: friendNode.id
       };
       relations.add(relation1);
-  
+
       if (friendOfFriendNode) {
         const relation2 = {
           id: `${friendNode.id}-${friendOfFriendNode.id}`,
@@ -137,7 +179,7 @@ export class Neo4jService {
         relations.add(relation2);
       }
     });
-  
+
     return { nodes: Array.from(nodes.values()), relations: Array.from(relations) };
   }
 

@@ -32,11 +32,8 @@ export class SearchComponent {
             this.openSnackBar('Profile found!', 'Close')
             let newResponse: any = {}
             Object.entries(response).forEach(([key, value]) => {
-              key = key.replaceAll(' ', '_')
-              key = key.replace(/\W.*/, '');
-              key = key.toLowerCase()
-              newResponse[key] = value
-            })
+                newResponse[key.toLowerCase().replace(/\s+/g, '_').replace(/\W.*$/, '')] = value;
+            });
             this.output.emit(newResponse)
           }
         },
