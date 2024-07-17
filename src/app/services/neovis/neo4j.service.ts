@@ -99,8 +99,8 @@ export class Neo4jService {
         ON CREATE SET ${properties}
         ON MATCH SET ${properties}
       WITH p${person.id}
-      MATCH (p${person.id}:Person {id${person.id}: "${friend.id}"}), (f${person.id}:Person {id${person.id}: "${person.id}"})
-      MERGE (p${person.id})-[r${person.id}:FRIEND]->(f${person.id}) 
+      MATCH (f${person.id}:Person {id: "${friend.id}"})
+      MERGE (f${person.id})-[r${person.id}:FRIEND]->(p${person.id})
     `
       console.log("CREATE PERSON QUERY", query)
       return query

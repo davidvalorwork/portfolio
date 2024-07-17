@@ -56,6 +56,7 @@ export class SearchComponent {
       this.searchLimit = 1;
     }
     console.log('Search limit changed to:', this.searchLimit);
-    // Add any additional logic you need to handle the change in search limit
+    this.searchLimit = Math.floor(this.searchLimit);
+    this.neo4jService.limit = this.searchLimit
   }
 }
